@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
+	"github.com/shouryabansal7/BookFam/handler"
 )
 
 func main(){
@@ -30,6 +31,12 @@ func main(){
 		AllowCredentials: false,
 		MaxAge:           300,
 	}))
+
+	v1Router := chi.NewRouter()
+	v1Router.Get("/healthz",handler.HandlerReadiness)
+	v1Router.Get("/err",handler.HandlerError)
+	router.Mount("/v1",v1Router)
+
 
 	srv := &http.Server{
 		Handler: router,
