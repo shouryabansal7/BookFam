@@ -28,7 +28,7 @@ func HandlerCreateUser(apiCfg *db.ApiConfig) http.HandlerFunc {
 		params := parameters{}
 		err := decoder.Decode(&params)
 		if err!=nil {
-			RespondWithError(w,400,fmt.Sprintf("Error parsing json",err))
+			RespondWithError(w,400,fmt.Sprintf("Error parsing json: %v",err))
 			return
 		}
 
