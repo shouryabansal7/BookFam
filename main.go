@@ -9,6 +9,8 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
+	"github.com/shouryabansal7/BookFam/db"
 	"github.com/shouryabansal7/BookFam/handler"
 )
 
@@ -32,9 +34,19 @@ func main(){
 		MaxAge:           300,
 	}))
 
+	apiCfg, db, err := db.DBSet()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Remember to close the database connection when you're done
+	defer db.Close()
+
 	v1Router := chi.NewRouter()
 	v1Router.Get("/healthz",handler.HandlerReadiness)
 	v1Router.Get("/err",handler.HandlerError)
+	v1Router.Post("/users",handler.HandlerCreateUser(apiCfg))
+
 	router.Mount("/v1",v1Router)
 
 
@@ -44,7 +56,7 @@ func main(){
 	}
 
 	log.Printf("Server Starting on port %v", portString)
-	err := srv.ListenAndServe()
+	err = srv.ListenAndServe()
 	if err!=nil{
 		log.Fatal(err)
 	}
