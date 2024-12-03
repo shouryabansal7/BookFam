@@ -12,6 +12,7 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/shouryabansal7/BookFam/db"
 	"github.com/shouryabansal7/BookFam/handler"
+	"github.com/shouryabansal7/BookFam/middleware"
 )
 
 func main(){
@@ -47,6 +48,7 @@ func main(){
 	v1Router.Get("/err",handler.HandlerError)
 	v1Router.Post("/users",handler.HandlerCreateUser(apiCfg))
 	v1Router.Post("/login", handler.HandlerLogin(apiCfg))
+	v1Router.Post("/protected",middleware.MiddlewareAuth(handler.HandlerProtectedRoute,apiCfg))
 
 	router.Mount("/v1",v1Router)
 
