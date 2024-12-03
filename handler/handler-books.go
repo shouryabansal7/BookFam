@@ -61,6 +61,8 @@ func HandlerAddBook(w http.ResponseWriter, r *http.Request, user database.User, 
 			return
 		}
 
+		addBookIdToUserList(w,r,book,user,apiCfg)
+		
 		RespondWithJSON(w,200,fmt.Sprintf("User successfully added to book '%s'", params.Name))
 	}else{
 		for _, id := range book.UserIds {
@@ -83,7 +85,24 @@ func HandlerAddBook(w http.ResponseWriter, r *http.Request, user database.User, 
 			return
 		}
 
+		addBookIdToUserList(w,r,book,user,apiCfg)
+
 		// Step 4: Respond with a success message
 		RespondWithJSON(w,200,fmt.Sprintf("User successfully added to book '%s'", params.Name))
 	}
+}
+
+func addBookIdToUserList(w http.ResponseWriter, r *http.Request,book database.Book, user database.User, apiCfg *db.ApiConfig){
+	updateParams := database.AddBookIDToUserParams{
+		ID:     user.ID,
+		ArrayAppend: book.ID,
+	}
+	err := apiCfg.DB.AddBookIDToUser(r.Context(), updateParams)
+	if err != nil {
+		log.Printf("Error updating user db: %v", err)
+		RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to add book to the user's array: %v", err))
+		return
+	}
+
+	RespondWithJSON(w,200,fmt.Sprintf("Book successfully added to user array '%s'", user.Name))
 }

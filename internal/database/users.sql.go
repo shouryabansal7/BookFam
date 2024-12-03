@@ -9,7 +9,24 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 )
+
+const addBookIDToUser = `-- name: AddBookIDToUser :exec
+UPDATE users
+SET book_ids = array_append(book_ids, $2)
+WHERE id = $1
+`
+
+type AddBookIDToUserParams struct {
+	ID          uuid.UUID
+	ArrayAppend uuid.UUID
+}
+
+func (q *Queries) AddBookIDToUser(ctx context.Context, arg AddBookIDToUserParams) error {
+	_, err := q.db.ExecContext(ctx, addBookIDToUser, arg.ID, arg.ArrayAppend)
+	return err
+}
 
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (id, name, email, password)
@@ -19,7 +36,7 @@ VALUES (
     $3,
     $4
 )
-RETURNING id, name, email, password
+RETURNING id, name, email, password, book_ids
 `
 
 type CreateUserParams struct {
@@ -42,12 +59,13 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.Name,
 		&i.Email,
 		&i.Password,
+		pq.Array(&i.BookIds),
 	)
 	return i, err
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, name, email, password FROM users WHERE email = $1
+SELECT id, name, email, password, book_ids FROM users WHERE email = $1
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
@@ -58,12 +76,13 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 		&i.Name,
 		&i.Email,
 		&i.Password,
+		pq.Array(&i.BookIds),
 	)
 	return i, err
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT id, name, email, password FROM users WHERE id = $1
+SELECT id, name, email, password, book_ids FROM users WHERE id = $1
 `
 
 func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (User, error) {
@@ -74,6 +93,7 @@ func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (User, error) {
 		&i.Name,
 		&i.Email,
 		&i.Password,
+		pq.Array(&i.BookIds),
 	)
 	return i, err
 }
