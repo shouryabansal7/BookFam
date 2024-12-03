@@ -85,3 +85,36 @@ func (q *Queries) FindBookByName(ctx context.Context, name string) (Book, error)
 	)
 	return i, err
 }
+
+const getBooks = `-- name: GetBooks :many
+SELECT id, name, author, genre, user_ids FROM books
+`
+
+func (q *Queries) GetBooks(ctx context.Context) ([]Book, error) {
+	rows, err := q.db.QueryContext(ctx, getBooks)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Book
+	for rows.Next() {
+		var i Book
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Author,
+			&i.Genre,
+			pq.Array(&i.UserIds),
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

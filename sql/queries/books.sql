@@ -18,3 +18,6 @@ WHERE name = $1;
 UPDATE books
 SET user_ids = array_append(user_ids, $2)
 WHERE id = $1;
+
+-- name: GetBooks :many
+SELECT * FROM books;

@@ -35,3 +35,11 @@ func DatabaseBookToBook(book database.Book) Book {
 		Genre:  	book.Genre,	
 	}
 }
+
+func DatabaseBooksToBooks(books []database.Book) []Book {
+	result := make([]Book, len(books))
+	for i, book := range books {
+		result[i] = DatabaseBookToBook(book)
+	}
+	return result
+}

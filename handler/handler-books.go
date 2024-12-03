@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/shouryabansal7/BookFam/db"
 	"github.com/shouryabansal7/BookFam/internal/database"
+	"github.com/shouryabansal7/BookFam/models"
 )
 
 func HandlerAddBook(w http.ResponseWriter, r *http.Request, user database.User, apiCfg *db.ApiConfig) {
@@ -62,7 +63,7 @@ func HandlerAddBook(w http.ResponseWriter, r *http.Request, user database.User, 
 		}
 
 		addBookIdToUserList(w,r,book,user,apiCfg)
-		
+
 		RespondWithJSON(w,200,fmt.Sprintf("User successfully added to book '%s'", params.Name))
 	}else{
 		for _, id := range book.UserIds {
@@ -105,4 +106,16 @@ func addBookIdToUserList(w http.ResponseWriter, r *http.Request,book database.Bo
 	}
 
 	RespondWithJSON(w,200,fmt.Sprintf("Book successfully added to user array '%s'", user.Name))
+}
+
+func HandlerGetBooks(w http.ResponseWriter, r *http.Request, user database.User, apiCfg *db.ApiConfig) {
+	books, err := apiCfg.DB.GetBooks(r.Context())
+
+	if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't get books: %v",err))
+		return
+	}
+
+
+	RespondWithJSON(w,200,models.DatabaseBooksToBooks(books))
 }

@@ -50,6 +50,7 @@ func main(){
 	v1Router.Post("/login", handler.HandlerLogin(apiCfg))
 	v1Router.Post("/protected",middleware.MiddlewareAuth(handler.HandlerProtectedRoute,apiCfg))
 	v1Router.Post("/book",middleware.MiddlewareAuth(handler.HandlerAddBook,apiCfg))
+	v1Router.Get("/books",middleware.MiddlewareAuth(handler.HandlerGetBooks,apiCfg))
 
 
 	router.Mount("/v1",v1Router)
