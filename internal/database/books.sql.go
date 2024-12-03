@@ -86,6 +86,23 @@ func (q *Queries) FindBookByName(ctx context.Context, name string) (Book, error)
 	return i, err
 }
 
+const getBookById = `-- name: GetBookById :one
+SELECT id, name, author, genre, user_ids FROM books WHERE id = $1
+`
+
+func (q *Queries) GetBookById(ctx context.Context, id uuid.UUID) (Book, error) {
+	row := q.db.QueryRowContext(ctx, getBookById, id)
+	var i Book
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Author,
+		&i.Genre,
+		pq.Array(&i.UserIds),
+	)
+	return i, err
+}
+
 const getBooks = `-- name: GetBooks :many
 SELECT id, name, author, genre, user_ids FROM books
 `

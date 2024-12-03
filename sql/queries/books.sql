@@ -21,3 +21,6 @@ WHERE id = $1;
 
 -- name: GetBooks :many
 SELECT * FROM books;
+
+-- name: GetBookById :one
+SELECT * FROM books WHERE id = $1;

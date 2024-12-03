@@ -119,3 +119,18 @@ func HandlerGetBooks(w http.ResponseWriter, r *http.Request, user database.User,
 
 	RespondWithJSON(w,200,models.DatabaseBooksToBooks(books))
 }
+
+func HandlerGetBooksBeingReadByUser(w http.ResponseWriter, r *http.Request, user database.User, apiCfg *db.ApiConfig) {
+	var books []models.Book
+
+	for _, id := range user.BookIds {
+		book, err:= apiCfg.DB.GetBookById(r.Context(),id)
+		if err != nil {
+			RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't get books: %v",err))
+			return
+		}
+		books = append(books, models.DatabaseBookToBook(book))
+	}
+
+	RespondWithJSON(w,200,books)
+}
