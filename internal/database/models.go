@@ -8,6 +8,14 @@ import (
 	"github.com/google/uuid"
 )
 
+type Book struct {
+	ID      uuid.UUID
+	Name    string
+	Author  string
+	Genre   string
+	UserIds []uuid.UUID
+}
+
 type User struct {
 	ID       uuid.UUID
 	Name     string

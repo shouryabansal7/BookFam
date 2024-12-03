@@ -10,7 +10,7 @@ import (
 	"github.com/shouryabansal7/BookFam/token"
 )
 
-type authedHandler func(http.ResponseWriter, *http.Request, database.User)
+type authedHandler func(http.ResponseWriter, *http.Request, database.User, *db.ApiConfig)
 
 func MiddlewareAuth(authedhandler authedHandler, apiCfg *db.ApiConfig) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -44,6 +44,6 @@ func MiddlewareAuth(authedhandler authedHandler, apiCfg *db.ApiConfig) http.Hand
 			return
 		}
 		//fmt.Sprintf("found it "+user.Email);
-		authedhandler(w, r, user)
+		authedhandler(w, r, user, apiCfg)
 	}
 }
