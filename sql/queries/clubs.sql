@@ -12,3 +12,8 @@ RETURNING *;
 UPDATE clubs
 SET user_ids = array_append(user_ids, $2)
 WHERE id = $1;
+
+-- name: RemoveUserFromClub :exec
+UPDATE clubs
+SET user_ids = array_remove(user_ids, $2)
+WHERE id = $1;

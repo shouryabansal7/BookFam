@@ -53,6 +53,8 @@ func main(){
 	v1Router.Get("/books",middleware.MiddlewareAuth(handler.HandlerGetBooks,apiCfg))
 	v1Router.Get("/user_books",middleware.MiddlewareAuth(handler.HandlerGetBooksBeingReadByUser,apiCfg))
 	v1Router.Post("/clubs",middleware.MiddlewareAuth(handler.HandlerCreateClub,apiCfg))
+	v1Router.Post("/club_join/{ClubID}", middleware.MiddlewareAuth(handler.HandlerJoinClub,apiCfg))
+	v1Router.Post("/club_leave/{ClubID}", middleware.MiddlewareAuth(handler.HandlerLeaveClub,apiCfg))
 
 	router.Mount("/v1",v1Router)
 

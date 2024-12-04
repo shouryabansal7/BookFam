@@ -62,3 +62,19 @@ func (q *Queries) CreateClubs(ctx context.Context, arg CreateClubsParams) (Club,
 	)
 	return i, err
 }
+
+const removeUserFromClub = `-- name: RemoveUserFromClub :exec
+UPDATE clubs
+SET user_ids = array_remove(user_ids, $2)
+WHERE id = $1
+`
+
+type RemoveUserFromClubParams struct {
+	ID          uuid.UUID
+	ArrayRemove uuid.UUID
+}
+
+func (q *Queries) RemoveUserFromClub(ctx context.Context, arg RemoveUserFromClubParams) error {
+	_, err := q.db.ExecContext(ctx, removeUserFromClub, arg.ID, arg.ArrayRemove)
+	return err
+}

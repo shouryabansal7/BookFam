@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/go-chi/chi"
 	"github.com/google/uuid"
 	"github.com/shouryabansal7/BookFam/db"
 	"github.com/shouryabansal7/BookFam/internal/database"
@@ -55,4 +56,50 @@ func HandlerCreateClub(w http.ResponseWriter, r *http.Request, user database.Use
 	}
 
 	RespondWithJSON(w,200,fmt.Sprintf("User successfully added to club '%s'", params.Name))
+}
+
+func HandlerJoinClub(w http.ResponseWriter, r *http.Request, user database.User, apiCfg *db.ApiConfig) {
+	clubJoinIDstr := chi.URLParam(r, "ClubID")
+	clubJoinID, err := uuid.Parse(clubJoinIDstr)
+	if err != nil {
+		RespondWithError(w, http.StatusBadRequest, "Invalid club join ID")
+		return
+	}
+
+	updateParams := database.AddUserClubParams{
+		ID:     clubJoinID,
+		ArrayAppend: user.ID,
+	}
+
+	err = apiCfg.DB.AddUserClub(r.Context(), updateParams)
+	if err != nil {
+		log.Printf("Error updating user_ids: %v", err)
+		RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to add user to the club: %v", err))
+		return
+	}
+
+	RespondWithJSON(w,200,fmt.Sprintf("User successfully added to club"))
+}
+
+func HandlerLeaveClub(w http.ResponseWriter, r *http.Request, user database.User, apiCfg *db.ApiConfig) {
+	clubJoinIDstr := chi.URLParam(r, "ClubID")
+	clubJoinID, err := uuid.Parse(clubJoinIDstr)
+	if err != nil {
+		RespondWithError(w, http.StatusBadRequest, "Invalid club leave ID")
+		return
+	}
+
+	updateParams := database.RemoveUserFromClubParams{
+		ID:     clubJoinID,
+		ArrayRemove: user.ID,
+	}
+
+	err = apiCfg.DB.RemoveUserFromClub(r.Context(), updateParams)
+	if err != nil {
+		log.Printf("Error updating user_ids: %v", err)
+		RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to remove user from the club: %v", err))
+		return
+	}
+
+	RespondWithJSON(w,200,fmt.Sprintf("User successfully left to club"))
 }
