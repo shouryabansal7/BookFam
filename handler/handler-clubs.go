@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/shouryabansal7/BookFam/db"
 	"github.com/shouryabansal7/BookFam/internal/database"
+	"github.com/shouryabansal7/BookFam/models"
 )
 
 func HandlerCreateClub(w http.ResponseWriter, r *http.Request, user database.User, apiCfg *db.ApiConfig) {
@@ -102,4 +103,16 @@ func HandlerLeaveClub(w http.ResponseWriter, r *http.Request, user database.User
 	}
 
 	RespondWithJSON(w,200,fmt.Sprintf("User successfully left to club"))
+}
+
+func HandlerGetClubs(w http.ResponseWriter, r *http.Request, user database.User, apiCfg *db.ApiConfig) {
+	clubs, err := apiCfg.DB.GetClubs(r.Context())
+
+	if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't get clubs: %v",err))
+		return
+	}
+
+
+	RespondWithJSON(w,200,models.DatabaseClubsToClubs(clubs))
 }

@@ -55,6 +55,7 @@ func main(){
 	v1Router.Post("/clubs",middleware.MiddlewareAuth(handler.HandlerCreateClub,apiCfg))
 	v1Router.Post("/club_join/{ClubID}", middleware.MiddlewareAuth(handler.HandlerJoinClub,apiCfg))
 	v1Router.Post("/club_leave/{ClubID}", middleware.MiddlewareAuth(handler.HandlerLeaveClub,apiCfg))
+	v1Router.Get("/clubs",middleware.MiddlewareAuth(handler.HandlerGetClubs,apiCfg))
 
 	router.Mount("/v1",v1Router)
 

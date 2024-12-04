@@ -20,7 +20,7 @@ WHERE id = $1
 
 type AddUserClubParams struct {
 	ID          uuid.UUID
-	ArrayAppend uuid.UUID
+	ArrayAppend interface{}
 }
 
 func (q *Queries) AddUserClub(ctx context.Context, arg AddUserClubParams) error {
@@ -63,6 +63,38 @@ func (q *Queries) CreateClubs(ctx context.Context, arg CreateClubsParams) (Club,
 	return i, err
 }
 
+const getClubs = `-- name: GetClubs :many
+SELECT id, name, genre, user_ids FROM clubs
+`
+
+func (q *Queries) GetClubs(ctx context.Context) ([]Club, error) {
+	rows, err := q.db.QueryContext(ctx, getClubs)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Club
+	for rows.Next() {
+		var i Club
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Genre,
+			pq.Array(&i.UserIds),
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const removeUserFromClub = `-- name: RemoveUserFromClub :exec
 UPDATE clubs
 SET user_ids = array_remove(user_ids, $2)
@@ -71,7 +103,7 @@ WHERE id = $1
 
 type RemoveUserFromClubParams struct {
 	ID          uuid.UUID
-	ArrayRemove uuid.UUID
+	ArrayRemove interface{}
 }
 
 func (q *Queries) RemoveUserFromClub(ctx context.Context, arg RemoveUserFromClubParams) error {

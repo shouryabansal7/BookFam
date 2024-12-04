@@ -17,3 +17,6 @@ WHERE id = $1;
 UPDATE clubs
 SET user_ids = array_remove(user_ids, $2)
 WHERE id = $1;
+
+-- name: GetClubs :many
+SELECT * FROM clubs;

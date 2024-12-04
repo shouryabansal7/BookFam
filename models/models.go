@@ -43,3 +43,25 @@ func DatabaseBooksToBooks(books []database.Book) []Book {
 	}
 	return result
 }
+
+type Club struct {
+	ID        	uuid.UUID 	`json:"id"`
+	Name      	string   	`json:"name"`
+	Genre  		string		`json:"genre"`
+}
+
+func DatabaseClubtoClub(club database.Club) Club {
+	return Club{
+		ID:        	club.ID,
+		Name:      	club.Name,
+		Genre:  	club.Genre,	
+	}
+}
+
+func DatabaseClubsToClubs(clubs []database.Club) []Club {
+	result := make([]Club, len(clubs))
+	for i, club := range clubs {
+		result[i] = DatabaseClubtoClub(club)
+	}
+	return result
+}
