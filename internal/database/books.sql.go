@@ -20,7 +20,7 @@ WHERE id = $1
 
 type AddUserToBookParams struct {
 	ID          uuid.UUID
-	ArrayAppend interface{}
+	ArrayAppend uuid.UUID
 }
 
 func (q *Queries) AddUserToBook(ctx context.Context, arg AddUserToBookParams) error {

@@ -20,7 +20,7 @@ WHERE id = $1
 
 type AddUserClubParams struct {
 	ID          uuid.UUID
-	ArrayAppend interface{}
+	ArrayAppend uuid.UUID
 }
 
 func (q *Queries) AddUserClub(ctx context.Context, arg AddUserClubParams) error {
@@ -103,7 +103,7 @@ WHERE id = $1
 
 type RemoveUserFromClubParams struct {
 	ID          uuid.UUID
-	ArrayRemove interface{}
+	ArrayRemove uuid.UUID
 }
 
 func (q *Queries) RemoveUserFromClub(ctx context.Context, arg RemoveUserFromClubParams) error {
