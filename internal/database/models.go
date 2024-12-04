@@ -16,6 +16,13 @@ type Book struct {
 	UserIds []uuid.UUID
 }
 
+type Club struct {
+	ID      uuid.UUID
+	Name    string
+	Genre   string
+	UserIds []uuid.UUID
+}
+
 type User struct {
 	ID       uuid.UUID
 	Name     string
