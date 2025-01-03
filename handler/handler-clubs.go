@@ -116,3 +116,35 @@ func HandlerGetClubs(w http.ResponseWriter, r *http.Request, user database.User,
 
 	RespondWithJSON(w,200,models.DatabaseClubsToClubs(clubs))
 }
+
+func HandlerClubMembers(w http.ResponseWriter, r *http.Request, user database.User, apiCfg *db.ApiConfig) {
+	clubIDstr := chi.URLParam(r, "ClubID")
+	clubID, err := uuid.Parse(clubIDstr)
+	if err != nil {
+		RespondWithError(w, http.StatusBadRequest, "Invalid club join ID")
+		return
+	}
+
+	
+
+	club, err := apiCfg.DB.GetClubByID(r.Context(),clubID)
+	if err != nil {
+		log.Printf("Error finding the club: %v", err)
+		RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to fetch members of the club with club id: %v", err))
+		return
+	}
+
+	result := make([]string, len(club.UserIds))
+
+	for i, userId := range club.UserIds{
+		user, err := apiCfg.DB.GetUserByID(r.Context(),userId)
+		if err != nil {
+			log.Printf("Error finding the user details: %v", err)
+			RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to fetch members of the club with club id: %v", err))
+			return
+		}
+		result[i] = user.Name
+	}
+
+	RespondWithJSON(w,200,result)
+}

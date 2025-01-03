@@ -20,3 +20,6 @@ WHERE id = $1;
 
 -- name: GetClubs :many
 SELECT * FROM clubs;
+
+-- name: GetClubByID :one
+SELECT * FROM clubs WHERE id = $1;

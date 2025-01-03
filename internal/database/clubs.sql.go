@@ -63,6 +63,22 @@ func (q *Queries) CreateClubs(ctx context.Context, arg CreateClubsParams) (Club,
 	return i, err
 }
 
+const getClubByID = `-- name: GetClubByID :one
+SELECT id, name, genre, user_ids FROM clubs WHERE id = $1
+`
+
+func (q *Queries) GetClubByID(ctx context.Context, id uuid.UUID) (Club, error) {
+	row := q.db.QueryRowContext(ctx, getClubByID, id)
+	var i Club
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Genre,
+		pq.Array(&i.UserIds),
+	)
+	return i, err
+}
+
 const getClubs = `-- name: GetClubs :many
 SELECT id, name, genre, user_ids FROM clubs
 `
